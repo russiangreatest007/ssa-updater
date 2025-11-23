@@ -1,6 +1,17 @@
 <?php
 // Report all errors to help debug any issues that might occur
 error_reporting(E_ALL);
+ini_set('display_errors', 1); 
+
+// --- ADD THESE LINES TO ENSURE ERRORS ARE VISIBLE ---
+ini_set('display_startup_errors', 1);
+error_reporting(-1); 
+// ---------------------------------------------------
+
+// ... (rest of your script) ...
+
+// Report all errors to help debug any issues that might occur
+error_reporting(E_ALL);
 ini_set('display_errors', 1);
 
 // --- 1. Configuration ---
