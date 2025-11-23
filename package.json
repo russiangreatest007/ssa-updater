@@ -3,7 +3,7 @@
   "version": "1.0.0",
   "description": "Vercel Serverless Function for Telegram submission",
   "main": "index.js",
-  "type": "commonjs",
+  "type": "module", 👈 CHANGE THIS LINE BACK TO "module"
   "scripts": {
     "start": "node index.js"
   },
